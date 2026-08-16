@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bench Studio — Estúdio criativo local para imagem, vídeo, site e PDF</title>
+<meta name="description" content="Bench Studio: estúdio criativo local-first com 37 rotas de modelo de imagem e vídeo, refino de prompt editável, arquivo local dos resultados e ledger de custo — com MCP para Claude, Codex e Cursor.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0c10; --bg2:#14141b; --card:#16161e; --line:#272730;
+    --txt:#e9e9ee; --mut:#9a9aa6; --amb:#E2A23B; --amb2:#f0c070; --sky:#38bdf8; --pro:#cbd5e1;
+    color-scheme:dark;
+  }
+  body.light{
+    --bg:#f6f7f9; --bg2:#eceef2; --card:#ffffff; --line:#e1e3ea;
+    --txt:#1a1a22; --mut:#5b5b68; --amb:#b9791d; --amb2:#a16207; --sky:#0369a1; --pro:#b45309;
+    color-scheme:light;
+  }
+  body.light .hero .glow{opacity:.5}
+  body.light pre{background:#0e0e14;color:#d6d6e0}
+  body.light pre .c{color:#8a8a98}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.65 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:Sora,sans-serif;line-height:1.15;margin:0}
+  a{color:var(--amb);text-decoration:none}
+  code,pre{font-family:"JetBrains Mono",monospace}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 22px}
+  .mut{color:var(--mut)} .amb{color:var(--amb)}
+  .chip{display:inline-block;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amb);font-weight:600;font-family:Sora}
+  nav{position:sticky;top:0;z-index:30;backdrop-filter:blur(12px);background:rgba(12,12,16,.78);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:22px;height:60px}
+  nav .brand{display:flex;align-items:center;gap:8px;font-family:Sora;font-weight:800;letter-spacing:-.02em;color:var(--amb)}
+  nav .brand .emoji{font-size:1.25rem}
+  nav .sep{color:var(--mut);opacity:.45}
+  nav .inema{color:var(--sky);font-weight:600;font-size:.88rem;font-family:Sora}
+  nav .inema:hover{filter:brightness(1.15)}
+  nav .pro{color:var(--pro);font-weight:600;font-size:.88rem;font-family:Sora}
+  nav .pro:hover{filter:brightness(1.15)}
+  nav .clubpro{display:inline-flex;align-items:center;gap:6px}
+  nav .links{margin-left:auto;display:flex;align-items:center;gap:20px;font-size:.92rem}
+  nav .links a.sec{color:var(--mut)} nav .links a.sec:hover{color:var(--txt)}
+  .tgl{background:var(--bg2);border:1px solid var(--line);color:var(--txt);width:38px;height:38px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:1.05rem}
+  .tgl:hover{border-color:var(--amb)}
+  .btn{display:inline-block;background:var(--amb);color:#1a1206;font-weight:600;padding:.6em 1.05em;border-radius:10px;font-family:Sora}
+  .btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+  @media(max-width:760px){nav .links a.sec{display:none}}
+  .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+  .hero .glow{position:absolute;inset:-40% -20% auto auto;width:70%;height:600px;background:radial-gradient(closest-side,rgba(226,162,59,.22),transparent 70%);pointer-events:none}
+  .hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding:74px 22px}
+  .hero h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;letter-spacing:-.025em}
+  .hero p.lead{font-size:1.18rem;color:var(--mut);margin:1.1em 0 1.6em;max-width:34ch}
+  .hero .cta{display:flex;gap:12px;flex-wrap:wrap}
+  .hero figure{margin:0;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px -30px #000}
+  .hero figure img{width:100%;display:block}
+  @media(max-width:780px){.hero .wrap{grid-template-columns:1fr;padding:48px 22px}}
+  section{padding:62px 0;border-bottom:1px solid var(--line)}
+  section h2{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:800;letter-spacing:-.02em}
+  section .sub{color:var(--mut);margin:.6em 0 2em;max-width:62ch}
+  .grid{display:grid;gap:16px}
+  .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)} .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:820px){.g3,.g4{grid-template-columns:1fr 1fr}}
+  @media(max-width:540px){.g2,.g3,.g4{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .card h3{font-size:1.05rem;margin-bottom:.4em}
+  .card p{color:var(--mut);font-size:.92rem;margin:0}
+  .num{display:inline-flex;width:30px;height:30px;align-items:center;justify-content:center;border-radius:8px;background:rgba(226,162,59,.14);color:var(--amb);font-family:Sora;font-weight:800;font-size:.9rem;margin-bottom:.7em}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+  .flow span{background:var(--bg2);border:1px solid var(--line);border-radius:999px;padding:.45em .9em;font-size:.85rem;font-family:Sora;font-weight:600}
+  .flow .arr{color:var(--amb);border:none;background:none;padding:0 .1em}
+  pre{background:#0a0a0e;border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow:auto;font-size:.86rem;line-height:1.6;color:#d6d6e0}
+  pre .c{color:#6f6f7c} pre .k{color:var(--amb2)} pre .s{color:#9ece6a}
+  .step{display:grid;grid-template-columns:46px 1fr;gap:16px;margin-bottom:26px}
+  .step .b{width:46px;height:46px;border-radius:12px;background:var(--amb);color:#1a1206;font-family:Sora;font-weight:800;font-size:1.25rem;display:flex;align-items:center;justify-content:center}
+  .step h3{font-size:1.12rem;margin-bottom:.3em}
+  .step p{color:var(--mut);margin:.2em 0 .7em}
+  .ex{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:680px){.ex{grid-template-columns:1fr}}
+  .ex figure{margin:0;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+  .ex figure img{width:100%;display:block}
+  .ex figcaption{padding:12px 14px;font-size:.88rem;color:var(--mut);background:var(--card)}
+  .phase{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .phase:last-child{border:none}
+  .phase .tag{flex:0 0 92px;font-family:Sora;font-weight:800;color:var(--amb)}
+  .phase .d strong{display:block;margin-bottom:.2em}
+  .phase .d span{color:var(--mut);font-size:.92rem}
+  footer{padding:46px 0;text-align:center;color:var(--mut);font-size:.9rem}
+  .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:.3em .8em;font-size:.78rem;color:var(--mut);margin:0 4px}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a class="brand" href="#top"><span class="emoji">🎛️</span> Bench Studio</a>
+  <span class="sep">|</span>
+  <span class="clubpro">
+    <a class="inema" href="https://inema.club" target="_blank" rel="noopener">INEMA.CLUB</a>
+    <span class="sep">-</span>
+    <a class="pro" href="https://inema.pro" target="_blank" rel="noopener">PRO</a>
+  </span>
+  <div class="links">
+    <a class="sec" href="#oque">O que é</a>
+    <a class="sec" href="#fluxo">Como funciona</a>
+    <a class="sec" href="#pre">Pré-requisitos</a>
+    <a class="sec" href="#guia">Guia de uso</a>
+    <a class="sec" href="#exemplos">Exemplos</a>
+    <a class="sec" href="#roadmap">Limites</a>
+    <button class="tgl" id="themeToggle" aria-label="Alternar tema" title="Alternar tema">🌙</button>
+    <a class="btn" href="https://github.com/inematds/bench-studio-public" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</div></nav>
+
+<header class="hero" id="top">
+  <div class="glow"></div>
+  <div class="wrap">
+    <div>
+      <span class="chip">Estúdio criativo local-first</span>
+      <h1>Pare de alugar o wrapper. <span class="amb">Tenha</span> a camada criativa.</h1>
+      <p class="lead">37 rotas de imagem e vídeo, refino de prompt editável, arquivo local dos resultados e um ledger de custo real — tudo rodando na sua máquina, com as chaves do lado do servidor.</p>
+      <div class="cta">
+        <a class="btn" href="#guia">Começar o guia</a>
+        <a class="btn ghost" href="https://github.com/inematds/bench-studio-public" target="_blank" rel="noopener">Ver no GitHub</a>
+      </div>
+    </div>
+    <figure><img src="assets/hero.png" alt="Capa do Bench Studio"></figure>
+  </div>
+</header>
+
+<section id="oque"><div class="wrap">
+  <span class="chip">O que é</span>
+  <h2>Um estúdio que você inspeciona, muda e leva junto</h2>
+  <p class="sub">A maioria dos produtos criativos de IA junta acesso a modelo, refino de prompt, roteamento, armazenamento e cobrança — e esconde as costuras atrás de uma assinatura. O Bench mantém a conveniência e deixa cada costura visível. Ele não é dono dos modelos; ele te dá a camada portátil que liga ideias, ferramentas, provedores, arquivos e custos.</p>
+  <div class="grid g3">
+    <div class="card"><h3>🎛️ Controles que vêm do modelo</h3><p>Cada endpoint aceita entradas diferentes (uma imagem, uma lista, um frame inicial, nenhuma). O registro curado descreve o contrato de cada rota e a interface mostra só os controles que existem de verdade.</p></div>
+    <div class="card"><h3>💸 Custo antes e depois</h3><p>Estimativa de preflight a partir da unidade de preço do modelo e dos parâmetros pedidos; depois, o valor cobrado quando o provedor devolve recibo suficiente. Estimado, medido e registrado são valores distintos — não a mesma coisa.</p></div>
+    <div class="card"><h3>🗄️ Seus arquivos, sua máquina</h3><p>Saídas espelhadas em disco e metadados em SQLite local (<code>data/bench.db</code>). O navegador nunca recebe segredo de provedor: quem guarda a chave é o serviço loopback.</p></div>
+  </div>
+</div></section>
+
+<section id="fluxo"><div class="wrap">
+  <span class="chip">Como funciona</span>
+  <h2>Da ideia ao recibo, em um caminho só</h2>
+  <p class="sub">A interface React e o servidor MCP falam com a mesma API local. Ela valida o payload específico do modelo, guarda as credenciais, transmite o progresso, espelha os artefatos e grava o metadado durável.</p>
+  <div class="flow">
+    <span>Sua ideia</span><span class="arr">→</span>
+    <span>UI React ou agente via MCP</span><span class="arr">→</span>
+    <span>API loopback</span><span class="arr">→</span>
+    <span>Prompt refinado (editável)</span><span class="arr">→</span>
+    <span>Roteador por capacidade</span><span class="arr">→</span>
+    <span>Estimativa + aprovação</span><span class="arr">→</span>
+    <span>fal.ai</span><span class="arr">→</span>
+    <span>Espelho local + ledger</span>
+  </div>
+  <div class="grid g3" style="margin-top:28px">
+    <div class="card"><h3>🧠 Refino visível</h3><p>O Bench acrescenta a estrutura que o modelo escolhido tende a entender e te mostra o rascunho reescrito. Você edita ou rejeita antes de gastar. Sem <code>GOOGLE_API_KEY</code>, o prompt original passa direto e a interface avisa que o refino está desligado.</p></div>
+    <div class="card"><h3>🧭 Descoberta ≠ produção</h3><p>O catálogo do provedor vira um snapshot de descoberta com evidência de schema e preço. Só depois de revisado o modelo entra no registro curado. Isso evita que um modelo novo, renomeado ou mal especificado quebre um fluxo pago em silêncio.</p></div>
+    <div class="card"><h3>🔌 Mesma capacidade via agente</h3><p>O servidor MCP expõe onze ferramentas: descobrir modelos, inspecionar contratos, subir referências, gerar imagem e vídeo, ler resultados/preview/gasto, criar e acompanhar projetos de site e documento, e buscar os artefatos.</p></div>
+  </div>
+</div></section>
+
+<section id="pre"><div class="wrap">
+  <span class="chip">Pré-requisitos</span>
+  <h2>O que precisa estar na máquina</h2>
+  <p class="sub">É uma ferramenta local de usuário único — nada de servidor hospedado. O essencial é Node recente e uma chave da fal.ai; o resto é opcional e desliga funcionalidades específicas.</p>
+  <div class="grid g3">
+    <div class="card"><h3>Node.js 22.5+</h3><p>Node 24 é o recomendado, porque o Bench usa <code>node:sqlite</code>. Precisa de npm também.</p><pre><span class="k">node -v</span>  <span class="c"># v22.5 ou maior</span></pre></div>
+    <div class="card"><h3>Chave da fal.ai</h3><p>Obrigatória para gerar imagem e vídeo. A chave do Google é opcional e serve só ao refino de prompt.</p><pre><span class="c"># ~/.env (nunca no repo)</span>
+<span class="k">FAL_KEY</span>=<span class="s">&lt;sua-chave-fal&gt;</span>
+<span class="k">GOOGLE_API_KEY</span>=<span class="s">&lt;opcional&gt;</span></pre></div>
+    <div class="card"><h3>Google Chrome</h3><p>Usado para imprimir os PDFs e para o preflight visual de overflow. Opcional: uma instalação do Codex logada, para os builds de site e documento.</p><pre><span class="k">google-chrome --version</span></pre></div>
+  </div>
+</div></section>
+
+<section id="guia"><div class="wrap">
+  <span class="chip">Guia de uso · passo a passo</span>
+  <h2>Rodando em três minutos</h2>
+  <p class="sub">Comandos reais do projeto. Esta é a distribuição pública sanitizada: ela chega sem histórico de geração, uploads, banco privado, caminhos pessoais ou credenciais — seu arquivo começa vazio.</p>
+
+  <div class="step"><div class="b">1</div><div>
+    <h3>Clonar e instalar</h3>
+    <p>Clone o repositório e instale as dependências.</p>
+<pre><span class="k">git clone</span> <span class="s">https://github.com/inematds/bench-studio-public.git</span>
+<span class="k">cd</span> bench-studio-public
+<span class="k">npm install</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">2</div><div>
+    <h3>Colocar as credenciais no lado do servidor</h3>
+    <p>O Bench lê as credenciais de <code>~/.env</code>. Nunca ponha chave de provedor em variável do Vite nem commite no repositório.</p>
+<pre><span class="c"># ~/.env</span>
+<span class="k">FAL_KEY</span>=<span class="s">&lt;sua-chave-fal&gt;</span>
+<span class="k">GOOGLE_API_KEY</span>=<span class="s">&lt;chave-google-opcional&gt;</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">3</div><div>
+    <h3>Subir o estúdio</h3>
+    <p>Um comando levanta a API local e a interface web juntas. Abra <code>http://localhost:5200</code>. A API fica em <code>http://localhost:8787</code> e o resumo de saúde/capacidade em <code>/api/health</code>.</p>
+<pre><span class="k">npm run dev</span>  <span class="c"># estúdio em :5200, API em :8787</span>
+
+<span class="c"># se as portas estiverem ocupadas:</span>
+<span class="k">PORT</span>=8790 <span class="k">BENCH_API_PORT</span>=8790 <span class="k">BENCH_WEB_PORT</span>=5201 <span class="k">npm run dev</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">4</div><div>
+    <h3>Criar: imagem e vídeo</h3>
+    <p>Na aba <strong>Create</strong>, escolha a rota, anexe as referências que aquele modelo aceita, revise o rascunho de prompt e a estimativa, e aprove. O resultado aparece inline e vai para o arquivo local com prompt submetido, modelo, URL do provedor, arquivo local e custo registrado.</p>
+<pre><span class="c"># atualizar o roster curado e os contratos de entrada</span>
+<span class="k">npm run registry</span>
+<span class="k">npm run capabilities</span>
+<span class="c"># refrescar descoberta e evidência de preço do provedor</span>
+<span class="k">npm run catalog:sync</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">5</div><div>
+    <h3>Sites e documentos</h3>
+    <p><strong>Websites</strong> gera sites estáticos originais com fonte editável, preview local e bundle para download. <strong>Documents</strong> gera PDFs desenhados por trás de um HTML editável, impressos pelo Chromium, com preflight de overflow. Site e documento podem invocar um agente de código autenticado localmente — revise a fonte antes de publicar.</p>
+  </div></div>
+
+  <div class="step"><div class="b">6</div><div>
+    <h3>Conectar Claude, Codex ou Cursor</h3>
+    <p>Abra <strong>Connect</strong>, escolha o cliente e copie a configuração gerada — o Bench insere o caminho absoluto correto da máquina atual (o repositório não traz o home de ninguém). A skill em <code>integrations/skills/bench-studio/</code> dá o julgamento e o fluxo; o MCP dá a execução.</p>
+<pre><span class="k">npm run mcp</span>       <span class="c"># servidor MCP em stdio</span>
+<span class="k">npm run test:mcp</span>  <span class="c"># smoke test de descoberta e mídia</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">7</div><div>
+    <h3>Conferir antes de confiar</h3>
+    <p>O portão de release cobre build de produção, contratos de API e banco, descoberta MCP, jornadas de navegador, acessibilidade, contenção responsiva, estados de falha, transições de modelo e snapshots visuais.</p>
+<pre><span class="k">npm run test:contracts</span>  <span class="c"># API, persistência e contratos de modelo</span>
+<span class="k">npm run test:e2e</span>        <span class="c"># jornadas de navegador + acessibilidade</span>
+<span class="k">npm run test:release</span>    <span class="c"># o portão completo</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">8</div><div>
+    <h3>Saber onde ficam seus dados</h3>
+    <p>O repositório começa sem <code>data/</code>; o Bench cria na primeira execução. O diretório inteiro é ignorado pelo Git. Apagar um resultado remove o registro no banco e os arquivos espelhados — não promete apagar cópias retidas por um provedor externo.</p>
+<pre>data/
+├── bench.db     <span class="c"># gerações, assets, gasto e projetos</span>
+├── inputs/      <span class="c"># uploads espelhados</span>
+├── outputs/     <span class="c"># gerações espelhadas</span>
+├── previews/    <span class="c"># posters de vídeo locais</span>
+└── projects/    <span class="c"># fonte de sites e documentos</span></pre>
+  </div></div>
+</div></section>
+
+<section id="exemplos"><div class="wrap">
+  <span class="chip">Exemplos</span>
+  <h2>A interface por dentro</h2>
+  <p class="sub">As duas telas centrais: onde você cria, e o catálogo de onde saem as rotas.</p>
+  <div class="ex">
+    <figure><img src="assets/ex1.jpg" alt="Workspace Create do Bench Studio"><figcaption>Create — referências conscientes do modelo, controles, rascunho de prompt editável, cotação, progresso e resultado inline.</figcaption></figure>
+    <figure><img src="assets/ex2.jpg" alt="Catálogo de modelos do Bench Studio"><figcaption>Catálogo — rotas curadas de texto→imagem, edição de imagem, texto→vídeo, imagem→vídeo e vídeo por referência.</figcaption></figure>
+  </div>
+</div></section>
+
+<section id="roadmap"><div class="wrap">
+  <span class="chip">Limites honestos</span>
+  <h2>O que o Bench é — e o que ele não promete</h2>
+  <p class="sub">Vale ler antes de adotar: são as fronteiras declaradas pelo próprio projeto.</p>
+  <div class="phase"><div class="tag">Escopo</div><div class="d"><strong>Ferramenta local de usuário único</strong><span>Não é um SaaS multi-tenant hospedado. A API sobe em loopback por padrão; não exponha publicamente sem autenticação e um modelo de ameaça deliberado.</span></div></div>
+  <div class="phase"><div class="tag">Catálogo</div><div class="d"><strong>Curadoria é intencional</strong><span>Estar no catálogo do provedor não garante admissão em produção. Disponibilidade e preço podem mudar depois de um sync.</span></div></div>
+  <div class="phase"><div class="tag">Fidelidade</div><div class="d"><strong>Entrada aceita ≠ resultado fiel</strong><span>O Bench registra o que foi submetido. Ele não afirma que uma referência anexada influenciou a saída só porque a API aceitou o campo — revisão humana continua necessária.</span></div></div>
+  <div class="phase"><div class="tag">Saídas</div><div class="d"><strong>Site estático, PDF via Chrome</strong><span>A saída de site é estática por design, e a criação de PDF depende de uma instalação local do Chrome.</span></div></div>
+  <div class="phase"><div class="tag">Custo</div><div class="d"><strong>Ter a camada é manter software</strong><span>Estimativas não são garantias, e ser dono da camada portátil significa manter um pequeno pedaço de software.</span></div></div>
+</div></section>
+
+<footer>
+  <div class="wrap">
+    <div class="pill">Node 22.5+</div><div class="pill">React + Vite</div><div class="pill">node:sqlite</div><div class="pill">MCP</div><div class="pill">fal.ai</div><div class="pill">MIT</div>
+    <p style="margin-top:18px">Bench Studio · distribuição pública sanitizada, licença MIT ·
+      <a href="https://github.com/inematds/bench-studio-public">inematds/bench-studio-public</a> ·
+      <a href="https://inema.club">INEMA.CLUB</a></p>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var KEY='bench-studio-theme';
+    var b=document.body, t=document.getElementById('themeToggle');
+    if(localStorage.getItem(KEY)==='light'){ b.classList.add('light'); t.textContent='☀️'; }
+    t.addEventListener('click',function(){
+      var light=b.classList.toggle('light');
+      t.textContent=light?'☀️':'🌙';
+      localStorage.setItem(KEY, light?'light':'dark');
+    });
+  })();
+</script>
+</body>
+</html>

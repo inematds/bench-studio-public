@@ -17,9 +17,9 @@ A local-first creative studio for images, videos, websites, designed PDFs, and A
 
 </div>
 
-## 📖 Guia de uso
+## 📖 User guide
 
-Guia completo (landing + passo a passo): **https://inematds.github.io/bench-studio-public/guia/**
+Complete guide (landing page + step-by-step instructions): **https://inematds.github.io/bench-studio-public/guia/en/**
 
 ![Bench Studio model catalog](docs/bench-studio-models.png)
 

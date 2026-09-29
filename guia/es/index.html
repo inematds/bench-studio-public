@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Bench Studio — Estudio creativo local para imagen, video, sitios y PDF</title>
+<meta content="Bench Studio: estudio creativo local primero con 37 rutas de modelos de imagen y video, refinamiento de prompts editable, archivo local de resultados y ledger de costos — con MCP para Claude, Codex y Cursor." name="description"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<style>
+  :root{
+    --bg:#0c0c10; --bg2:#14141b; --card:#16161e; --line:#272730;
+    --txt:#e9e9ee; --mut:#9a9aa6; --amb:#E2A23B; --amb2:#f0c070; --sky:#38bdf8; --pro:#cbd5e1;
+    color-scheme:dark;
+  }
+  body.light{
+    --bg:#f6f7f9; --bg2:#eceef2; --card:#ffffff; --line:#e1e3ea;
+    --txt:#1a1a22; --mut:#5b5b68; --amb:#b9791d; --amb2:#a16207; --sky:#0369a1; --pro:#b45309;
+    color-scheme:light;
+  }
+  body.light .hero .glow{opacity:.5}
+  body.light pre{background:#0e0e14;color:#d6d6e0}
+  body.light pre .c{color:#8a8a98}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.65 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:Sora,sans-serif;line-height:1.15;margin:0}
+  a{color:var(--amb);text-decoration:none}
+  code,pre{font-family:"JetBrains Mono",monospace}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 22px}
+  .mut{color:var(--mut)} .amb{color:var(--amb)}
+  .chip{display:inline-block;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amb);font-weight:600;font-family:Sora}
+  nav{position:sticky;top:0;z-index:30;backdrop-filter:blur(12px);background:rgba(12,12,16,.78);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:22px;height:60px}
+  nav .brand{display:flex;align-items:center;gap:8px;font-family:Sora;font-weight:800;letter-spacing:-.02em;color:var(--amb)}
+  nav .brand .emoji{font-size:1.25rem}
+  nav .sep{color:var(--mut);opacity:.45}
+  nav .inema{color:var(--sky);font-weight:600;font-size:.88rem;font-family:Sora}
+  nav .inema:hover{filter:brightness(1.15)}
+  nav .pro{color:var(--pro);font-weight:600;font-size:.88rem;font-family:Sora}
+  nav .pro:hover{filter:brightness(1.15)}
+  nav .clubpro{display:inline-flex;align-items:center;gap:6px}
+  nav .links{margin-left:auto;display:flex;align-items:center;gap:20px;font-size:.92rem}
+  nav .links a.sec{color:var(--mut)} nav .links a.sec:hover{color:var(--txt)}
+  .tgl{background:var(--bg2);border:1px solid var(--line);color:var(--txt);width:38px;height:38px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:1.05rem}
+  .tgl:hover{border-color:var(--amb)}
+  .btn{display:inline-block;background:var(--amb);color:#1a1206;font-weight:600;padding:.6em 1.05em;border-radius:10px;font-family:Sora}
+  .btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+  @media(max-width:760px){nav .links a.sec{display:none}}
+  .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+  .hero .glow{position:absolute;inset:-40% -20% auto auto;width:70%;height:600px;background:radial-gradient(closest-side,rgba(226,162,59,.22),transparent 70%);pointer-events:none}
+  .hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding:74px 22px}
+  .hero h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;letter-spacing:-.025em}
+  .hero p.lead{font-size:1.18rem;color:var(--mut);margin:1.1em 0 1.6em;max-width:34ch}
+  .hero .cta{display:flex;gap:12px;flex-wrap:wrap}
+  .hero figure{margin:0;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px -30px #000}
+  .hero figure img{width:100%;display:block}
+  @media(max-width:780px){.hero .wrap{grid-template-columns:1fr;padding:48px 22px}}
+  section{padding:62px 0;border-bottom:1px solid var(--line)}
+  section h2{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:800;letter-spacing:-.02em}
+  section .sub{color:var(--mut);margin:.6em 0 2em;max-width:62ch}
+  .grid{display:grid;gap:16px}
+  .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)} .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:820px){.g3,.g4{grid-template-columns:1fr 1fr}}
+  @media(max-width:540px){.g2,.g3,.g4{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .card h3{font-size:1.05rem;margin-bottom:.4em}
+  .card p{color:var(--mut);font-size:.92rem;margin:0}
+  .num{display:inline-flex;width:30px;height:30px;align-items:center;justify-content:center;border-radius:8px;background:rgba(226,162,59,.14);color:var(--amb);font-family:Sora;font-weight:800;font-size:.9rem;margin-bottom:.7em}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+  .flow span{background:var(--bg2);border:1px solid var(--line);border-radius:999px;padding:.45em .9em;font-size:.85rem;font-family:Sora;font-weight:600}
+  .flow .arr{color:var(--amb);border:none;background:none;padding:0 .1em}
+  pre{background:#0a0a0e;border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow:auto;font-size:.86rem;line-height:1.6;color:#d6d6e0}
+  pre .c{color:#6f6f7c} pre .k{color:var(--amb2)} pre .s{color:#9ece6a}
+  .step{display:grid;grid-template-columns:46px 1fr;gap:16px;margin-bottom:26px}
+  .step .b{width:46px;height:46px;border-radius:12px;background:var(--amb);color:#1a1206;font-family:Sora;font-weight:800;font-size:1.25rem;display:flex;align-items:center;justify-content:center}
+  .step h3{font-size:1.12rem;margin-bottom:.3em}
+  .step p{color:var(--mut);margin:.2em 0 .7em}
+  .ex{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:680px){.ex{grid-template-columns:1fr}}
+  .ex figure{margin:0;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+  .ex figure img{width:100%;display:block}
+  .ex figcaption{padding:12px 14px;font-size:.88rem;color:var(--mut);background:var(--card)}
+  .phase{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .phase:last-child{border:none}
+  .phase .tag{flex:0 0 92px;font-family:Sora;font-weight:800;color:var(--amb)}
+  .phase .d strong{display:block;margin-bottom:.2em}
+  .phase .d span{color:var(--mut);font-size:.92rem}
+  footer{padding:46px 0;text-align:center;color:var(--mut);font-size:.9rem}
+  .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:.3em .8em;font-size:.78rem;color:var(--mut);margin:0 4px}
+</style>
+<link href="https://inematds.github.io/bench-studio-public/guia/" hreflang="pt-BR" rel="alternate"/><link href="https://inematds.github.io/bench-studio-public/guia/en/" hreflang="en" rel="alternate"/><link href="https://inematds.github.io/bench-studio-public/guia/es/" hreflang="es" rel="alternate"/></head>
+<body><div class="inema-lang" style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:2px;padding:4px;border-radius:10px;background:rgba(12,12,16,.82);border:1px solid rgba(226,162,59,.45);font:600 12px/1 Sora,Inter,system-ui,sans-serif;backdrop-filter:blur(8px)" translate="no"><a href="../" hreflang="pt-BR" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">PT</a><a href="../en/" hreflang="en" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">EN</a><a href="./" hreflang="es" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#1a1206;background:#E2A23B">ES</a></div>
+<nav><div class="wrap">
+<a class="brand" href="#top"><span class="emoji">🎛️</span> Bench Studio</a>
+<span class="sep">|</span>
+<span class="clubpro">
+<a class="inema" href="https://inema.club" rel="noopener" target="_blank">INEMA.CLUB</a>
+<span class="sep">-</span>
+<a class="pro" href="https://inema.pro" rel="noopener" target="_blank">PRO</a>
+</span>
+<div class="links">
+<a class="sec" href="#oque">Qué es</a>
+<a class="sec" href="#fluxo">Cómo funciona</a>
+<a class="sec" href="#pre">Requisitos previos</a>
+<a class="sec" href="#guia">Guía de uso</a>
+<a class="sec" href="#exemplos">Ejemplos</a>
+<a class="sec" href="#roadmap">Límites</a>
+<button aria-label="Cambiar tema" class="tgl" id="themeToggle" title="Cambiar tema">🌙</button>
+<a class="btn" href="https://github.com/inematds/bench-studio-public" rel="noopener" target="_blank">GitHub</a>
+</div>
+</div></nav>
+<header class="hero" id="top">
+<div class="glow"></div>
+<div class="wrap">
+<div>
+<span class="chip">Estudio creativo local-first</span>
+<h1>Deja de alquilar el wrapper. <span class="amb">Ten</span> la capa creativa.</h1>
+<p class="lead">37 rutas de imagen y video, refinamiento de prompts editable, archivo local de resultados y un ledger de costos reales — todo funcionando en tu máquina, con las claves del lado del servidor.</p>
+<div class="cta">
+<a class="btn" href="#guia">Comenzar la guía</a>
+<a class="btn ghost" href="https://github.com/inematds/bench-studio-public" rel="noopener" target="_blank">Ver en GitHub</a>
+</div>
+</div>
+<figure><img alt="Portada de Bench Studio" src="../assets/hero.png"/></figure>
+</div>
+</header>
+<section id="oque"><div class="wrap">
+<span class="chip">Qué es</span>
+<h2>Un estudio que puedes inspeccionar, modificar y llevar contigo</h2>
+<p class="sub">La mayoría de los productos creativos de IA combinan acceso a modelos, refinamiento de prompts, enrutamiento, almacenamiento y facturación — y esconden las costuras detrás de una suscripción. Bench conserva la comodidad y deja cada costura a la vista. No es dueño de los modelos; te da la capa portátil que conecta ideas, herramientas, proveedores, archivos y costos.</p>
+<div class="grid g3">
+<div class="card"><h3>🎛️ Controles que vienen del modelo</h3><p>Cada endpoint acepta entradas diferentes (una imagen, una lista, un fotograma inicial, ninguna). El registro curado describe el contrato de cada ruta y la interfaz muestra solo los controles que realmente existen.</p></div>
+<div class="card"><h3>💸 Costo antes y después</h3><p>Estimación de preflight basada en la unidad de precio del modelo y los parámetros solicitados; después, el monto cobrado cuando el proveedor devuelve un recibo suficiente. Los valores estimados, medidos y registrados son distintos: no son lo mismo.</p></div>
+<div class="card"><h3>🗄️ Tus archivos, tu máquina</h3><p>Resultados reflejados en el disco y metadatos en SQLite local (<code>data/bench.db</code>). El navegador nunca recibe secretos del proveedor: quien guarda la clave es el servicio loopback.</p></div>
+</div>
+</div></section>
+<section id="fluxo"><div class="wrap">
+<span class="chip">Cómo funciona</span>
+<h2>De la idea al recibo, en un solo flujo</h2>
+<p class="sub">La interfaz de React y el servidor MCP se comunican con la misma API local. Esta valida el payload específico del modelo, guarda las credenciales, transmite el progreso, guarda copias de los artefactos y registra los metadatos duraderos.</p>
+<div class="flow">
+<span>Tu idea</span><span class="arr">→</span>
+<span>UI React o agente vía MCP</span><span class="arr">→</span>
+<span>API loopback</span><span class="arr">→</span>
+<span>Prompt refinado (editable)</span><span class="arr">→</span>
+<span>Enrutador por capacidad</span><span class="arr">→</span>
+<span>Estimación + aprobación</span><span class="arr">→</span>
+<span>fal.ai</span><span class="arr">→</span>
+<span>Espejo local + ledger</span>
+</div>
+<div class="grid g3" style="margin-top:28px">
+<div class="card"><h3>🧠 Refinamiento visible</h3><p>Bench agrega la estructura que el modelo elegido suele entender y te muestra el borrador reescrito. Lo editas o lo rechazas antes de gastar. Sin <code>GOOGLE_API_KEY</code>, el prompt original se envía directamente y la interfaz avisa que el refinamiento está desactivado.</p></div>
+<div class="card"><h3>🧭 Descubrimiento ≠ producción</h3><p>El catálogo del proveedor se convierte en una instantánea de descubrimiento con evidencia del esquema y el precio. Solo después de revisarlo, el modelo se incorpora al registro curado. Esto evita que un modelo nuevo, renombrado o mal especificado rompa silenciosamente un flujo de pago.</p></div>
+<div class="card"><h3>🔌 Misma capacidad vía agente</h3><p>El servidor MCP expone once herramientas: descubrir modelos, inspeccionar contratos, cargar referencias, generar imágenes y videos, consultar resultados, vistas previas y gastos, crear y dar seguimiento a proyectos de sitios web y documentos, y buscar los artefactos.</p></div>
+</div>
+</div></section>
+<section id="pre"><div class="wrap">
+<span class="chip">Requisitos previos</span>
+<h2>Qué necesitas en la máquina</h2>
+<p class="sub">Es una herramienta local para un solo usuario; no es un servidor alojado. Lo esencial es Node reciente y una clave de fal.ai; lo demás es opcional y desactiva funcionalidades específicas.</p>
+<div class="grid g3">
+<div class="card"><h3>Node.js 22.5+</h3><p>Node 24 es lo recomendado, porque Bench usa <code>node:sqlite</code>. También necesitas npm.</p><pre><span class="k">node -v</span>  <span class="c"># v22.5 o superior</span></pre></div>
+<div class="card"><h3>Clave de fal.ai</h3><p>Obligatoria para generar imágenes y videos. La clave de Google es opcional y solo sirve para refinar prompts.</p><pre><span class="c"># ~/.env (nunca en el repo)</span>
+<span class="k">FAL_KEY</span>=<span class="s">&lt;sua-chave-fal&gt;</span>
+<span class="k">GOOGLE_API_KEY</span>=<span class="s">&lt;opcional&gt;</span></pre></div>
+<div class="card"><h3>Google Chrome</h3><p>Se usa para imprimir los PDF y para el preflight visual de overflow. Opcional: una instalación de Codex con sesión iniciada, para las builds de sitios y documentos.</p><pre><span class="k">google-chrome --version</span></pre></div>
+</div>
+</div></section>
+<section id="guia"><div class="wrap">
+<span class="chip">Guía de uso · paso a paso</span>
+<h2>En marcha en tres minutos</h2>
+<p class="sub">Comandos reales del proyecto. Esta es la distribución pública sanitizada: llega sin historial de generación, cargas, base de datos privada, rutas personales ni credenciales — tu archivo empieza vacío.</p>
+<div class="step"><div class="b">1</div><div>
+<h3>Clonar e instalar</h3>
+<p>Clona el repositorio e instala las dependencias.</p>
+<pre><span class="k">git clone</span> <span class="s">https://github.com/inematds/bench-studio-public.git</span>
+<span class="k">cd</span> bench-studio-public
+<span class="k">npm install</span></pre>
+</div></div>
+<div class="step"><div class="b">2</div><div>
+<h3>Colocar las credenciales del lado del servidor</h3>
+<p>Bench lee las credenciales de <code>~/.env</code>. Nunca pongas una clave del proveedor en una variable de Vite ni la confirmes en el repositorio.</p>
+<pre><span class="c"># ~/.env</span>
+<span class="k">FAL_KEY</span>=<span class="s">&lt;sua-chave-fal&gt;</span>
+<span class="k">GOOGLE_API_KEY</span>=<span class="s">&lt;chave-google-opcional&gt;</span></pre>
+</div></div>
+<div class="step"><div class="b">3</div><div>
+<h3>Iniciar el estudio</h3>
+<p>Un comando inicia la API local y la interfaz web juntas. Abre <code>http://localhost:5200</code>. La API está en <code>http://localhost:8787</code> y el resumen del estado/capacidad en <code>/api/health</code>.</p>
+<pre><span class="k">npm run dev</span>  <span class="c"># estudio en :5200, API en :8787</span>
+
+<span class="c"># si los puertos están ocupados:</span>
+<span class="k">PORT</span>=8790 <span class="k">BENCH_API_PORT</span>=8790 <span class="k">BENCH_WEB_PORT</span>=5201 <span class="k">npm run dev</span></pre>
+</div></div>
+<div class="step"><div class="b">4</div><div>
+<h3>Crear: imagen y video</h3>
+<p>En la pestaña <strong>Create</strong>, elige la ruta, adjunta las referencias que acepta ese modelo, revisa el borrador del prompt y el cálculo estimado, y aprueba. El resultado aparece inline y se guarda en el archivo local con el prompt enviado, el modelo, la URL del proveedor, el archivo local y el costo registrado.</p>
+<pre><span class="c"># actualizar el roster curado y los contratos de entrada</span>
+<span class="k">npm run registry</span>
+<span class="k">npm run capabilities</span>
+<span class="c"># actualizar el descubrimiento y la evidencia de precios del proveedor</span>
+<span class="k">npm run catalog:sync</span></pre>
+</div></div>
+<div class="step"><div class="b">5</div><div>
+<h3>Sitios y documentos</h3>
+<p><strong>Websites</strong> genera sitios estáticos originales con código fuente editable, vista previa local y bundle para descargar. <strong>Documents</strong> genera PDF diseñados a partir de un HTML editable, impresos con Chromium, con preflight de overflow. El sitio y el documento pueden invocar un agente de código autenticado localmente; revisa el código fuente antes de publicar.</p>
+</div></div>
+<div class="step"><div class="b">6</div><div>
+<h3>Conectar Claude, Codex o Cursor</h3>
+<p>Abre <strong>Connect</strong>, elige el cliente y copia la configuración generada — Bench inserta la ruta absoluta correcta de la máquina actual (el repositorio no incluye el home de nadie). La skill en <code>integrations/skills/bench-studio/</code> aporta el criterio y el flujo; MCP aporta la ejecución.</p>
+<pre><span class="k">npm run mcp</span>       <span class="c"># servidor MCP en stdio</span>
+<span class="k">npm run test:mcp</span>  <span class="c"># prueba rápida de descubrimiento y medios</span></pre>
+</div></div>
+<div class="step"><div class="b">7</div><div>
+<h3>Verifica antes de confiar</h3>
+<p>La puerta de release cubre el build de producción, los contratos de API y de base de datos, el descubrimiento MCP, los recorridos en el navegador, la accesibilidad, la contención responsiva, los estados de error, las transiciones de modelo y las capturas visuales.</p>
+<pre><span class="k">npm run test:contracts</span>  <span class="c"># API, persistencia y contratos de modelos</span>
+<span class="k">npm run test:e2e</span>        <span class="c"># recorridos del navegador + accesibilidad</span>
+<span class="k">npm run test:release</span>    <span class="c"># la puerta completa</span></pre>
+</div></div>
+<div class="step"><div class="b">8</div><div>
+<h3>Saber dónde están tus datos</h3>
+<p>El repositorio comienza sin <code>data/</code>; Bench lo crea en la primera ejecución. Todo el directorio está excluido de Git. Borrar un resultado elimina el registro de la base de datos y los archivos espejados — no promete borrar las copias que conserve un proveedor externo.</p>
+<pre>data/
+├── bench.db     <span class="c"># generaciones, assets, gasto y proyectos</span>
+├── inputs/      <span class="c"># cargas espejadas</span>
+├── outputs/     <span class="c"># generaciones espejadas</span>
+├── previews/    <span class="c"># pósteres de video locales</span>
+└── projects/    <span class="c"># fuente de sitios y documentos</span></pre>
+</div></div>
+</div></section>
+<section id="exemplos"><div class="wrap">
+<span class="chip">Ejemplos</span>
+<h2>La interfaz por dentro</h2>
+<p class="sub">Las dos pantallas principales: donde creas y el catálogo del que salen las rutas.</p>
+<div class="ex">
+<figure><img alt="Workspace Create de Bench Studio" src="../assets/ex1.jpg"/><figcaption>Create — referencias conscientes del modelo, controles, borrador de prompt editable, cotización, progreso y resultado integrado.</figcaption></figure>
+<figure><img alt="Catálogo de modelos de Bench Studio" src="../assets/ex2.jpg"/><figcaption>Catálogo — rutas curadas de texto→imagen, edición de imagen, texto→video, imagen→video y video por referencia.</figcaption></figure>
+</div>
+</div></section>
+<section id="roadmap"><div class="wrap">
+<span class="chip">Límites honestos</span>
+<h2>Qué es Bench y qué no promete</h2>
+<p class="sub">Vale la pena leerlo antes de adoptar: son los límites declarados por el propio proyecto.</p>
+<div class="phase"><div class="tag">Alcance</div><div class="d"><strong>Herramienta local para un solo usuario</strong><span>No es un SaaS multi-tenant alojado. La API se inicia en loopback de forma predeterminada; no la expongas públicamente sin autenticación y un modelo de amenazas deliberado.</span></div></div>
+<div class="phase"><div class="tag">Catálogo</div><div class="d"><strong>La curaduría es intencional</strong><span>Estar en el catálogo del proveedor no garantiza la admisión en producción. La disponibilidad y el precio pueden cambiar después de una sincronización.</span></div></div>
+<div class="phase"><div class="tag">Fidelidad</div><div class="d"><strong>Entrada aceptada ≠ resultado fiel</strong><span>Bench registra lo que se envió. No afirma que una referencia adjunta haya influido en el resultado solo porque la API aceptó el campo: sigue siendo necesaria la revisión humana.</span></div></div>
+<div class="phase"><div class="tag">Resultados</div><div class="d"><strong>Sitio estático, PDF vía Chrome</strong><span>La salida de sitios es estática por diseño, y la creación de PDF depende de una instalación local de Chrome.</span></div></div>
+<div class="phase"><div class="tag">Costo</div><div class="d"><strong>Tener la capa es mantener software</strong><span>Las estimaciones no son garantías, y ser dueño de la capa portátil significa mantener una pequeña pieza de software.</span></div></div>
+</div></section>
+<footer>
+<div class="wrap">
+<div class="pill">Node 22.5+</div><div class="pill">React + Vite</div><div class="pill">node:sqlite</div><div class="pill">MCP</div><div class="pill">fal.ai</div><div class="pill">MIT</div>
+<p style="margin-top:18px">Bench Studio · distribución pública sanitizada, licencia MIT ·
+      <a href="https://github.com/inematds/bench-studio-public">inematds/bench-studio-public</a> ·
+      <a href="https://inema.club">INEMA.CLUB</a></p>
+</div>
+</footer>
+<script>
+  (function(){
+    var KEY='bench-studio-theme';
+    var b=document.body, t=document.getElementById('themeToggle');
+    if(localStorage.getItem(KEY)==='light'){ b.classList.add('light'); t.textContent='☀️'; }
+    t.addEventListener('click',function(){
+      var light=b.classList.toggle('light');
+      t.textContent=light?'☀️':'🌙';
+      localStorage.setItem(KEY, light?'light':'dark');
+    });
+  })();
+</script>
+</body>
+</html>
